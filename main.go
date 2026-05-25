@@ -6,5 +6,5 @@ import (
 
 
 func main() {
-	files.ReadCurrentDirectory()
+	files.ReadDirectory()
 }
