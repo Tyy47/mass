@@ -8,7 +8,7 @@ import (
 )
 
 // A list of directories that shouldn't be displayed or written
-var bannedDirectories = []string{}
+var bannedDirectories = []string{".git", "var", "mnt"}
 
 // File structure of how to write to json output
 type File struct {
@@ -46,7 +46,16 @@ func ReadDirectory() {
 	var dirs []string
 	for _, entry := range items {
 		if entry.IsDir() {
-			dirs = append(dirs, entry.Name())
+			isBanned := false
+			for _, banned := range bannedDirectories {
+				if banned == entry.Name() {
+					isBanned = true
+					break
+				}
+			}
+			if !isBanned {
+				dirs = append(dirs, entry.Name())
+			}
 		} else {
 			info, _ := os.Stat(entry.Name())
 			file := File{
@@ -59,7 +68,9 @@ func ReadDirectory() {
 
 	for _, dir := range dirs {
 		os.Chdir(dir)
-		ReadCurrentDirectory()
+		ReadDirectory(
+			
+		)
 		os.Chdir("..")
 	}
 }
