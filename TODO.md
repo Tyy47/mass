@@ -1,3 +1,2 @@
-- Add more banned directories
 - Add output to json instead of writing to console.
 - Add reactive time for how long it's taking to search through files.

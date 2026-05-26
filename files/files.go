@@ -8,7 +8,21 @@ import (
 )
 
 // A list of directories that shouldn't be displayed or written
-var bannedDirectories = []string{".git", "var", "mnt"}
+var bannedDirectories = []string{
+	// Common
+	".git",
+
+	// Linux system directories
+	"bin", "boot", "dev", "etc", "lib", "lib32", "lib64", "libx32",
+	"lost+found", "opt", "proc", "root", "run", "sbin",
+	"snap", "srv", "sys", "tmp", "usr", "var",
+
+	// Windows system directories
+	"Windows", "System32", "SysWOW64", "WinSxS", "Program Files",
+	"Program Files (x86)", "ProgramData", "PerfLogs", "Recovery",
+	"$Recycle.Bin", "$WinREAgent", "System Volume Information",
+	"Documents and Settings", "MSOCache", "OneDriveTemp",
+}
 
 // File structure of how to write to json output
 type File struct {
@@ -57,7 +71,10 @@ func ReadDirectory() {
 				dirs = append(dirs, entry.Name())
 			}
 		} else {
-			info, _ := os.Stat(entry.Name())
+			info, err := os.Stat(entry.Name())
+			if err != nil {
+				continue
+			}
 			file := File{
 				path: entry.Name(),
 				size: float64(info.Size()) / (1024 * 1024),
@@ -67,10 +84,14 @@ func ReadDirectory() {
 	}
 
 	for _, dir := range dirs {
-		os.Chdir(dir)
-		ReadDirectory(
-			
-		)
-		os.Chdir("..")
+		prev, err := os.Getwd()
+		if err != nil {
+			continue
+		}
+		if err := os.Chdir(dir); err != nil {
+			continue
+		}
+		ReadDirectory()
+		os.Chdir(prev)
 	}
 }
